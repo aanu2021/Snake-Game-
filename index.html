@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding Snake Game</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaina+2:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+
+            margin: 0;
+            padding: 0;
+
+        }
+
+        .body {
+
+            height: 100vh;
+            width: 100vw;
+            background-image: url('bg.jpg');
+            background-size: 100vw 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+        }
+
+
+        #score {
+
+            position: absolute;
+            top: 10px;
+            right: 150px;
+            font-size: 40px;
+            font-weight: bolder;
+            font-family: 'Baloo Bhaina 2', cursive;
+
+        }
+
+        #highscoreBox{
+
+          position:absolute;
+          top:10px;
+          left:30px;
+          font-size:40px;
+          font-weight:bolder;
+          font-family: 'Baloo Bhaina 2', cursive;
+
+        }
+
+        #board {
+
+            background: linear-gradient(rgb(119, 119, 200), rgb(238, 230, 230));
+            height: 90vmin;
+            width: 90vmin;
+            border: 4px solid black;
+
+            display: grid;
+            grid-template-rows: repeat(18, 1fr);
+            grid-template-columns: repeat(18, 1fr);
+
+        }
+
+        .head {
+
+            background: linear-gradient(red, green, yellow);
+            border: 5px solid red;
+            border-radius: 15px;
+
+        }
+
+        .snake {
+
+            background: linear-gradient(brown, pink, green);
+            border: 4px solid white;
+            border-radius: 12px;
+
+        }
+
+        .food {
+
+            background: linear-gradient(blue, red, purple);
+            border: 4px solid rgb(245, 238, 238);
+            border-radius: 8px;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="body">
+
+        <div id="score">SCORE : 0</div>
+        <div id="highscoreBox">HIGH SCORE : 0</div>
+        <div id="board">
+
+        </div>
+
+    </div>
+
+</body>
+
+<script>
+
+    // Constants and Variables
+
+    let inputdir = { x: 0, y: 0 };
+
+    let lastPaintTime = 0;
+    let speed = 6;
+    let score = 0;
+
+    let snakeArr = [
+
+        { x: 13, y: 15 }
+
+    ]
+
+    let food = { x: 6, y: 9 };
+
+    // Game Functions
+
+    function main(ctime) {
+
+        window.requestAnimationFrame(main);
+
+        if ((ctime - lastPaintTime) / 1000 < 1 / speed) {
+            return;
+        }
+
+        lastPaintTime = ctime;
+
+        gameEngine();
+
+    }
+
+
+    // Game Over Condition
+
+    function isCollide(sArr) {
+
+        // If you bump into yourself
+
+        // If you make a contact with the wall
+
+
+        for (let i = 1; i < sArr.length; i++) {
+
+            if (sArr[i].x === sArr[0].x && sArr[i].y === sArr[0].y) {
+                return true;
+            }
+
+        }
+
+
+        if (sArr[0].x <= 0 || sArr[0].x >= 18 || sArr[0].y <= 0 || sArr[0].y >= 18) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+
+    function gameEngine() {
+
+        // Part 1 : Updating the Snake Array and Food
+
+
+        if (isCollide(snakeArr)) {
+
+            inputdir = { x: 0, y: 0 };
+
+            alert("Game Over!!!");
+
+            snakeArr = [
+
+                { x: 13, y: 15 }
+
+            ]
+
+            score = 0;
+
+        }
+
+
+        // If snake have eaten food , score increased 
+
+        if (snakeArr[0].x === food.x && snakeArr[0].y === food.y) {
+
+            snakeArr.unshift({ x: snakeArr[0].x + inputdir.x, y: snakeArr[0].y + inputdir.y });
+
+            score += 1;
+
+            if(score>hiscoreval){
+
+                hiscoreval=score;
+                localStorage.setItem("hiscore",JSON.stringify(hiscoreval));
+                highscoreBox.innerHTML = "HIGH SCORE : " + hiscoreval;
+
+            }
+
+            document.getElementById('score').innerHTML = "SCORE : " + score;
+
+            let a = 2;
+            let b = 16;
+
+            food = { x: Math.round(a + (b - a) * Math.random()), y: Math.round(a + (b - a) * Math.random()) };
+
+        }
+
+
+        // Moving the Snake
+
+        for (let i = snakeArr.length - 2; i >= 0; i--) {
+
+            snakeArr[i + 1] = { ...snakeArr[i] };
+
+        }
+
+        snakeArr[0].x += inputdir.x;
+        snakeArr[0].y += inputdir.y;
+
+
+        // Part 2 : Render the Snake and Food
+
+        board.innerHTML = "";
+
+        snakeArr.forEach((e, index) => {
+
+            let snakeElement = document.createElement('div');
+            snakeElement.style.gridRowStart = e.y;
+            snakeElement.style.gridColumnStart = e.x;
+
+            if (index === 0) {
+                snakeElement.classList.add('head');
+            }
+
+            else {
+                snakeElement.classList.add('snake');
+            }
+
+            board.appendChild(snakeElement);
+
+        })
+
+
+        let foodElement = document.createElement('div');
+        foodElement.style.gridRowStart = food.y;
+        foodElement.style.gridColumnStart = food.x;
+        foodElement.classList.add('food');
+        board.appendChild(foodElement);
+
+
+    }
+
+
+    // Main Logic
+
+    let hiscore=localStorage.getItem("hiscore");
+
+    if(hiscore==null){
+
+      hiscoreval = 0;  
+      localStorage.setItem("hiscore",JSON.stringify(hiscoreval));
+
+    }
+
+    else{
+
+      hiscoreval = JSON.parse(hiscore);  
+      highscoreBox.innerHTML = "HIGH SCORE : " + hiscore;
+
+    }
+
+    window.requestAnimationFrame(main);
+
+    window.addEventListener('keydown', e => {
+
+        inputdir = { x: 0, y: 1 }; // Start the Game
+        // moveSound.play();
+
+        switch (e.key) {
+            case "ArrowUp":
+                console.log("ArrowUp");
+                inputdir.x = 0;
+                inputdir.y = -1;
+                break;
+
+            case "ArrowDown":
+                console.log("ArrowDown");
+                inputdir.x = 0;
+                inputdir.y = 1;
+                break;
+
+            case "ArrowLeft":
+                console.log("ArrowLeft");
+                inputdir.x = -1;
+                inputdir.y = 0;
+                break;
+
+            case "ArrowRight":
+                console.log("ArrowRight");
+                inputdir.x = 1;
+                inputdir.y = 0;
+                break;
+
+            default:
+                break;
+        }
+
+    })
+
+</script>
+
+</html>

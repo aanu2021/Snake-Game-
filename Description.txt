@@ -1,0 +1,151 @@
+Snake Game Project --> 1.HTML 
+                       2.CSS
+                       3.JS
+
+HTML :---->  Here HTML is very simple , create a body div , and inside it add three div functionalities ----- scoreBox, highscoreBox, board .
+
+
+
+CSS :----> CSS is simple too in these project . 
+
+1. We have to set the bg.jpg as background image and then set its display as flex , such that all the added contents are positioned at center automatically . 
+
+2. Then set the scoreBox and highscoreBox using position absolute and style them a little bit.
+
+3. Then comes our main area of interest the board , where actually the game happens. We have to use linear-gradient in these case . And set its display grid , such that we can utilize each and every cell of the grid to move the snake's head, body, foods.
+
+4.After that styling of head, body, foods are done as per your choice.
+
+
+
+JAVASCRIPT :---->  Here the heart of the project lies in its JS's logics and implementations....
+
+1. First we have to create some variables , in these case ------  inputDir = {x : 0 , y : 0}. 
+
+   But we have to paint / change the window screen after a particular interval. And for these form two variables lastPaintTime,speed.
+
+   Declare a snakeArr , which defines all the body segments of the snake as 2-D coordinates in our board.
+
+   And finally declare an arbitrary position of food , which changes after a particular interval of time.
+
+
+   2. Now its the time to make some Game Functions , using which we can play the game , ...........
+
+
+   (a) First Change the Screen widget -->
+
+   For changing the screen after certain time we can use requestAnimationFrame / setInterval . But the first one will be more optimal for js. We have to pass a function main through these , which again calls the function main inside it and recursively call the same function again and again.
+
+      Further we can manipulate the time interval using cTime and lastPaintTime if their speed is smaller than our desired speed , then just do nothing. Else reinitialize lastPaintTime with cTime , and call the gameEngine() function.
+
+
+
+   (b) GameEngine -->
+
+     These part consists of two segments , ---> (i) Updating the Snake Array and food , (ii) Render the Snake and Food 
+
+      Before moving on to these part we have to make sure that no collision bw the snake and his body , or bw the snake and the side walls occur , if yes then alert("Game Over!!!"). And set 
+      inputDir = { x : 0 , y : 0 }
+      snakeArr = [{x:13,y:15}]
+      score=0 . 
+
+
+      (i) If the Snake have already eaten the food , then the score will increase . 
+
+           snakeArr.unshift({ x : snakeArr[0].x + inputDir.x , y : snakeArr[0].y + inputDir.y});
+
+           score++;
+
+           Then we have to change the innerHTML of scoreBox , Now we want to set the position of the food randomly at another coordinate.
+
+             Now after each successful move , we have to shift the snake's positions and for these we have to shift the snakeArr segments.
+
+
+    (ii)   board.innerHTML = "";
+
+     snakeArr.forEach((e,index) => {
+
+       let snakeElement = document.createElement('div');
+       snakeElement.style.gridRowStart = e.y;
+       snakeElement.style.gridColumnStart = e.x;
+
+       if(index === 0){
+          snakeElement.classList.add('head');
+       }
+
+       else{
+         snakeElement.classList.add('snake');
+       }
+
+       board.appendChild(snakeElement);
+
+     })     
+
+     
+      let foodElement = document.   createElement('div');
+        foodElement.style.gridRowStart = food.y;
+        foodElement.style.gridColumnStart = food.x;
+        foodElement.classList.add('food');
+        board.appendChild(foodElement);
+
+
+     
+
+
+   (c) GameOver Condition --> 
+
+    Declare a function isCollide which takes snakeArr as an argument. 
+
+    There is two chances of collision ---
+
+    (i) If the snake bump into itself
+    (ii) If it makes contact with side walls.
+
+    
+
+
+    MAIN  LOGIC ::--->>
+
+    We have to use addEventListener('keydown' , e => {
+
+       inputDir = { x : 0 , y : 1 };
+
+       switch(e.key){
+
+          case "ArrowUp":
+                console.log("ArrowUp");
+                inputdir.x = 0;
+                inputdir.y = -1;
+                break;
+
+            case "ArrowDown":
+                console.log("ArrowDown");
+                inputdir.x = 0;
+                inputdir.y = 1;
+                break;
+
+            case "ArrowLeft":
+                console.log("ArrowLeft");
+                inputdir.x = -1;
+                inputdir.y = 0;
+                break;
+
+            case "ArrowRight":
+                console.log("ArrowRight");
+                inputdir.x = 1;
+                inputdir.y = 0;
+                break;
+
+            default:
+                break;
+        }
+
+       }
+        
+    }) 
+
+
+
+    ----------------*****------------------
+
+    Enjoy your game.........
